@@ -294,10 +294,13 @@ static void sys_putpreference(const char *key, const char *value)
         RegCloseKey(hkey);
 #endif /* _WIN32 */
 #ifdef __APPLE__
+#include <TargetConditionals.h>
+#if TARGET_OS_OSX
         char cmdbuf[MAXPDSTRING];
         snprintf(cmdbuf, MAXPDSTRING,
             "defaults write org.puredata.pd %s \"%s\" 2> /dev/null\n", key, value);
         system(cmdbuf);
+#endif
 #endif /* __APPLE__ */
     }
 }
@@ -640,6 +643,8 @@ void glob_forgetpreferences(t_pd *dummy)
     else post("couldn't delete .pdsettings file.");
 #endif  /* !defined(_WIN32) && !defined(__APPLE__) */
 #ifdef __APPLE__
+#include <TargetConditionals.h>
+#if TARGET_OS_OSX
     char cmdbuf[MAXPDSTRING];
     int warn = 1;
     if (!sys_getpreference("audioapi", cmdbuf, MAXPDSTRING))
@@ -650,6 +655,7 @@ void glob_forgetpreferences(t_pd *dummy)
     if (system(cmdbuf) && warn)
         post("failed to erase Pd settings.");
     else post("erased Pd settings.");
+#endif
 #endif /* __APPLE__ */
 #ifdef _WIN32
     HKEY hkey;
